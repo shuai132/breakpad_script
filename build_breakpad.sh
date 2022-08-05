@@ -1,18 +1,15 @@
 #!/bin/bash
 set -e
 
-SOURCE_DIR=$1
-OUTPUT_DIR=$2
-C_COMPILER=$3
-CXX_COMPILER=$4
-C_FLAGS=$5
-CXX_FLAGS=$6
-INSTALL_DIR=$7
-
-if [ "$7" == "" ]; then
-  echo "error: need more parameters"
-  exit 1
-fi
+echo "$0 parameters:"
+echo "SOURCE_DIR:$SOURCE_DIR"
+echo "OUTPUT_DIR:$OUTPUT_DIR"
+echo "C_COMPILER:$C_COMPILER"
+echo "CXX_COMPILER:$CXX_COMPILER"
+echo "C_FLAGS:$C_FLAGS"
+echo "CXX_FLAGS:$CXX_FLAGS"
+echo "INSTALL_DIR:$INSTALL_DIR"
+echo ""
 
 # shellcheck disable=SC2046
 CURRENT_DIR=$(cd $(dirname "$0") && pwd)
@@ -37,12 +34,12 @@ export CXX=${CXX_COMPILER}
 export CFLAGS="${C_FLAGS} ${FIX_FLAGS}"
 export CXXFLAGS="${CXX_FLAGS} ${FIX_FLAGS}"
 ./configure --host=arm-linux --prefix="$OUTPUT_DIR"
+make clean
 make -j32
 make install
 
-BREAKPAD_DIR=$CURRENT_DIR/$INSTALL_DIR
-mkdir -p "$BREAKPAD_DIR"/include
-mkdir -p "$BREAKPAD_DIR"/libs
+mkdir -p "$INSTALL_DIR"/include
+mkdir -p "$INSTALL_DIR"/libs
 
-cp -rf "$OUTPUT_DIR"/include "$BREAKPAD_DIR"
-cp -f "$OUTPUT_DIR"/lib/libbreakpad_client.a "$BREAKPAD_DIR"/libs
+cp -rf "$OUTPUT_DIR"/include "$INSTALL_DIR"
+cp -f "$OUTPUT_DIR"/lib/libbreakpad_client.a "$INSTALL_DIR"/libs
